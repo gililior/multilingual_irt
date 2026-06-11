@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Multilingual-IRT: Extending Item Response Theory for Efficient and Meaningful Multilingual Evaluation</title>
+<meta name="description" content="Multilingual-IRT extends Item Response Theory to parallel multilingual benchmarks: efficient evaluation, translation-error detection, and culture-specific item discovery across 29 languages and 25 LLMs.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#fbfaf7;
+  --ink:#1d2433;
+  --ink-soft:#4b5266;
+  --ink-faint:#8a90a3;
+  --line:#e4e2da;
+  --accent:#bf4946;        /* the Multilingual-IRT curve red */
+  --accent-soft:#f6e8e7;
+  --blue:#4a6fa5;          /* baseline steel blue */
+  --blue-soft:#e9eef6;
+  --card:#ffffff;
+  --display:"STIX Two Text", Georgia, serif;
+  --body:"Source Sans 3", -apple-system, "Segoe UI", sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--body);
+  font-size:1.06rem;
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:2px}
+.wrap{max-width:860px;margin:0 auto;padding:0 1.4rem}
+.wrap-wide{max-width:1040px;margin:0 auto;padding:0 1.4rem}
+
+/* ---------- hero ---------- */
+header.wrap{padding:7rem 1.4rem 3.2rem;text-align:center}
+h1{
+  font-family:var(--display);font-weight:600;
+  font-size:clamp(1.7rem, 3.6vw, 2.7rem);
+  line-height:1.22;letter-spacing:-.01em;
+  max-width:21em;margin:0 auto 1.6rem;
+}
+h1 .accent{color:var(--accent)}
+.authors{font-size:1.04rem;color:var(--ink);line-height:1.9}
+.authors a{color:var(--ink);border-bottom:1px solid var(--line)}
+.authors a:hover{color:var(--accent);text-decoration:none;border-color:var(--accent)}
+.authors sup{font-size:.68em;color:var(--ink-faint);margin-left:.1em}
+.affils{font-size:.92rem;color:var(--ink-soft);margin-top:.45rem}
+.affils sup{font-size:.72em;color:var(--ink-faint)}
+
+.btn-row{display:flex;flex-wrap:wrap;gap:.7rem;justify-content:center;margin-top:1.9rem}
+.btn{
+  display:inline-flex;align-items:center;gap:.5rem;
+  font-family:var(--mono);font-size:.86rem;font-weight:500;
+  padding:.58rem 1.15rem;border-radius:999px;
+  border:1.5px solid var(--ink);color:var(--ink);background:transparent;
+  transition:background .15s ease,color .15s ease;
+}
+.btn:hover{background:var(--ink);color:var(--paper);text-decoration:none}
+.btn.primary{background:var(--ink);color:var(--paper)}
+.btn.primary:hover{background:var(--accent);border-color:var(--accent)}
+.btn.wip{border-style:dashed;border-color:var(--ink-faint);color:var(--ink-faint);cursor:default}
+.btn.wip:hover{background:transparent;color:var(--ink-faint)}
+.btn .tag{
+  font-size:.62rem;letter-spacing:.1em;padding:.12rem .42rem;border-radius:999px;
+  background:var(--accent-soft);color:var(--accent);font-weight:600;
+}
+
+/* ---------- sections ---------- */
+section.wrap,section.wrap-wide{padding-top:5rem}
+.sec-head{display:flex;flex-direction:column;gap:.45rem;margin-bottom:1.3rem}
+.kicker{
+  font-family:var(--mono);font-size:.78rem;font-weight:500;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--accent);
+}
+.kicker .sym{
+  font-family:var(--display);font-style:italic;text-transform:none;
+  font-size:1.05rem;letter-spacing:0;margin-right:.35rem;
+}
+h2{
+  font-family:var(--display);font-weight:600;
+  font-size:clamp(1.3rem,2.4vw,1.7rem);letter-spacing:-.005em;
+}
+p + p{margin-top:1rem}
+.lede{font-size:1.13rem;color:var(--ink-soft)}
+em{font-style:italic}
+strong{font-weight:600}
+
+/* tl;dr cards */
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:1.6rem}
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:12px;
+  padding:1.3rem 1.25rem;display:flex;flex-direction:column;gap:.55rem;
+}
+.card .problem{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--ink-faint);
+}
+.card h3{font-family:var(--display);font-weight:600;font-size:1.12rem;line-height:1.3}
+.card p{font-size:.94rem;color:var(--ink-soft);line-height:1.55}
+.card .stat{
+  margin-top:auto;padding-top:.7rem;border-top:1px dashed var(--line);
+  font-size:.92rem;color:var(--ink);
+}
+.card .stat b{color:var(--accent);font-weight:600}
+
+/* abstract */
+.abstract{
+  background:var(--card);border:1px solid var(--line);border-radius:12px;
+  padding:1.8rem 2rem;
+}
+.abstract p{color:var(--ink-soft);font-size:1.01rem}
+
+/* equation */
+.equation{
+  background:var(--ink);color:#f3f1ea;border-radius:12px;
+  padding:1.7rem 1.4rem;text-align:center;overflow-x:auto;
+  font-family:var(--display);font-size:clamp(1rem,2.4vw,1.3rem);
+}
+.equation .ml{color:#e9908d}
+.equation sub,.equation sup{font-size:.62em}
+.eq-note{font-size:.86rem;color:var(--ink-faint);text-align:center;margin-top:.7rem;font-family:var(--mono)}
+.components{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:1.4rem}
+.component{border-left:3px solid var(--accent);padding:.15rem 0 .15rem 1rem}
+.component .sym{font-family:var(--display);font-style:italic;font-size:1.15rem;color:var(--accent)}
+.component p{font-size:.92rem;color:var(--ink-soft);margin-top:.3rem;line-height:1.5}
+
+/* figures */
+figure{margin:1.6rem 0 0}
+.fig-frame{
+  background:var(--card);border:1px solid var(--line);border-radius:12px;
+  padding:1.4rem;display:flex;justify-content:center;
+}
+figure img{width:100%;max-width:720px;height:auto;display:block}
+figcaption{
+  font-size:.92rem;color:var(--ink-soft);margin-top:.85rem;
+  line-height:1.55;max-width:780px;margin-left:auto;margin-right:auto;
+}
+figcaption b{color:var(--ink)}
+.lab{
+  font-family:var(--mono);font-size:.72rem;font-weight:600;
+  letter-spacing:.12em;text-transform:uppercase;margin-right:.55rem;
+  color:var(--ink-faint);
+}
+.lab.result{color:var(--accent)}
+p .accent{color:var(--accent);font-weight:600}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:1rem;align-items:start}
+
+/* bibtex */
+.bibtex-box{position:relative;margin-top:1.2rem}
+pre{
+  background:var(--ink);color:#dcd8cc;border-radius:12px;
+  padding:1.5rem 1.6rem;overflow-x:auto;
+  font-family:var(--mono);font-size:.84rem;line-height:1.6;
+}
+.copy-btn{
+  position:absolute;top:.8rem;right:.8rem;
+  font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;
+  background:rgba(255,255,255,.12);color:#f3f1ea;border:none;
+  padding:.4rem .8rem;border-radius:6px;cursor:pointer;
+}
+.copy-btn:hover{background:rgba(255,255,255,.22)}
+
+footer{
+  margin-top:4.5rem;padding:2.2rem 0 2.8rem;border-top:1px solid var(--line);
+  text-align:center;font-size:.9rem;color:var(--ink-faint);
+}
+footer a{color:var(--ink-soft)}
+
+@media (max-width:760px){
+  .cards,.components,.two-col{grid-template-columns:1fr}
+  header.wrap{padding-top:4rem}
+  .abstract{padding:1.4rem 1.3rem}
+}
+</style>
+</head>
+<body>
+
+<header class="wrap">
+  <h1>Extending <span class="accent">Item Response Theory</span> for Efficient and Meaningful Multilingual Evaluation</h1>
+  <div class="authors">
+    <a href="https://gililior.github.io" target="_blank" rel="noopener">Gili Lior</a><sup>1,2</sup> &nbsp;·&nbsp;
+    <a href="https://scholar.google.com/citations?user=S6xal0UAAAAJ" target="_blank" rel="noopener">Tzviel Frostig</a><sup>3</sup> &nbsp;·&nbsp;
+    <a href="https://gabrielstanovsky.github.io" target="_blank" rel="noopener">Gabriel Stanovsky</a><sup>2</sup> &nbsp;·&nbsp;
+    <a href="https://scholar.google.com/citations?user=Dfb3aV8AAAAJ" target="_blank" rel="noopener">Matan Eyal</a><sup>1</sup>
+  </div>
+  <div class="affils"><sup>1</sup>Google Research &nbsp;&nbsp; <sup>2</sup>The Hebrew University of Jerusalem &nbsp;&nbsp; <sup>3</sup>PhaseV Trials</div>
+  <div class="btn-row">
+    <a class="btn primary" href="#">📄&ensp;Paper</a>
+    <span class="btn wip">&lt;/&gt;&ensp;Code <span class="tag">soon</span></span>
+    <span class="btn wip">🗂&ensp;Data <span class="tag">soon</span></span>
+    <a class="btn" href="#bibtex">❞&ensp;BibTeX</a>
+  </div>
+</header>
+
+<section class="wrap" id="tldr">
+  <p class="lede">Parallel multilingual benchmarks test the <em>same items</em> across many languages, yet today they are scored as if every (item, language) pair were unrelated. <strong>Multilingual-IRT</strong> models that parallel structure directly, and its fitted parameters turn three chronic benchmark problems into three practical tools.</p>
+  <div class="cards">
+    <div class="card">
+      <div class="problem">Problem · cost scales with languages</div>
+      <h3>Efficient evaluation</h3>
+      <p>Fit on a fraction of the predictions tensor and impute the rest, with no need to run every LLM on every item in every language.</p>
+      <div class="stat"><b>11–16% lower BCE</b> than the strongest accuracy baseline; 60% of instances can go unevaluated at negligible loss.</div>
+    </div>
+    <div class="card">
+      <div class="problem">Problem · silent translation errors</div>
+      <h3>Translation-error detection</h3>
+      <p>Per-language difficulty shifts flag items that became unexpectedly harder (or easier) in a given language.</p>
+      <div class="stat">Errors surfaced <b>across all 28 non-English languages</b>, where accuracy baselines pile up in just three.</div>
+    </div>
+    <div class="card">
+      <div class="problem">Problem · culture vs. general knowledge</div>
+      <h3>Culture-specific items</h3>
+      <p>Splitting discriminability into content vs. language components exposes items whose answers depend on cultural context.</p>
+      <div class="stat"><b>26.1% precision</b> at top-2K vs. 19.8% base rate, surfacing items accuracy methods miss.</div>
+    </div>
+  </div>
+</section>
+
+<section class="wrap" id="abstract">
+  <div class="sec-head"><h2>Abstract</h2></div>
+  <div class="abstract">
+    <p>Multilingual benchmarks are central to evaluating large language models (LLMs) across languages, but they suffer from three issues: exhaustive evaluation scales linearly with the number of languages, automatic translation introduces errors that are easily missed at scale, and some items conflate general and culture-specific knowledge. We address all three with a unified statistical framework, <strong>Multilingual-IRT</strong>, which extends Item Response Theory with per-language difficulty deviations, split discriminability separating content from language effects, and per-language ability residuals.</p>
+    <p>Fitting Multilingual-IRT on 25 LLMs across 29 languages of MMLU-Pro-X, we show that its fitted parameters support three practical applications: predicting unobserved (item, LLM, language) instances with 11–16% lower binary cross-entropy than the strongest accuracy-based baseline, surfacing candidate translation errors distributed across all 28 non-English languages (whereas accuracy-based baselines concentrate detections in a few languages), and recovering culture-specific items that accuracy-based baselines miss.</p>
+  </div>
+</section>
+
+<section class="wrap" id="model">
+  <div class="sec-head"><h2>The model in one line</h2></div>
+  <p>Multilingual-IRT extends the classic 2PL response model with three components, each capturing a structural fact about parallel multilingual benchmarks:</p>
+  <figure>
+    <div class="equation">
+      logit(<i>p<sub>ijl</sub></i>) &nbsp;=&nbsp;
+      <span class="ml"><i>a</i><sup>base</sup><sub>i</sub></span>&hairsp;<i>θ<sub>j</sub></i>
+      &nbsp;+&nbsp;
+      <span class="ml"><i>a</i><sup>lang</sup><sub>i</sub></span>&hairsp;(<i>ε<sub>j</sub></i>)<sub><i>l</i></sub>
+      &nbsp;−&nbsp;
+      (<i>b<sub>i</sub></i> + <span class="ml"><i>d<sub>il</sub></i></span>)
+    </div>
+    <div class="eq-note">item i · LLM j · language l &nbsp;·&nbsp; ε<sub>j</sub> ~ N(0, σ²R<sup>lng</sup>) with a learned cross-lingual correlation matrix</div>
+  </figure>
+  <div class="components">
+    <div class="component">
+      <span class="sym">d<sub>il</sub></span>
+      <p><strong>Per-language difficulty deviation.</strong> Translation can make the same item harder in one language than another. A large positive d<sub>il</sub> is a red flag for a translation error.</p>
+    </div>
+    <div class="component">
+      <span class="sym">ε<sub>j</sub> , R<sup>lng</sup></span>
+      <p><strong>Correlated ability residuals.</strong> An LLM's proficiency deviates from its overall ability per language, with deviations coupled across languages through a learned correlation matrix.</p>
+    </div>
+    <div class="component">
+      <span class="sym">a<sup>base</sup><sub>i</sub> / a<sup>lang</sup><sub>i</sub></span>
+      <p><strong>Split discriminability.</strong> How much an item separates LLMs by <em>content</em>, versus by <em>language</em>. A high ratio a<sup>lang</sup>/a<sup>base</sup> signals culture-specific knowledge.</p>
+    </div>
+  </div>
+</section>
+
+<section class="wrap-wide" id="efficiency">
+  <div class="wrap" style="padding:0">
+    <div class="sec-head">
+      <div class="kicker"><span class="sym">b<sub>i</sub></span><span class="sym">, a<sub>i</sub></span> shared item parameters across languages</div>
+      <h2>Evaluate a fraction, predict the rest</h2>
+    </div>
+    <p><span class="lab">How</span>Evaluating 25 LLMs on 11,759 items in 29 languages means filling an ~8.5M-entry predictions tensor. Multilingual-IRT fits on a sampled fraction ρ and predicts the rest, and fitting it costs negligibly compared to LLM inference.</p>
+    <p><span class="lab result">Finding</span>At every observation fraction, Multilingual-IRT beats all accuracy-based baselines, and reaches near-full accuracy with only <span class="accent">40% of instances observed</span>.</p>
+  </div>
+  <figure>
+    <div class="fig-frame"><img src="static/fig1.svg" alt="Line charts of binary cross-entropy and ROC-AUC on unseen instances as a function of observed fraction, with Multilingual-IRT outperforming all baselines." loading="lazy"></div>
+    <figcaption><b>Prediction over unseen (item, LLM, language) instances.</b> (a) Binary cross-entropy and (b) ROC-AUC versus the fraction of observed instances ρ. Multilingual-IRT (red) achieves 11–16% lower BCE than the strongest accuracy-based baseline at every ρ.</figcaption>
+  </figure>
+</section>
+
+<section class="wrap-wide" id="translation">
+  <div class="wrap" style="padding:0">
+    <div class="sec-head">
+      <div class="kicker"><span class="sym">d<sub>il</sub></span> per-language difficulty deviation</div>
+      <h2>Find diverse translation errors</h2>
+    </div>
+    <p><span class="lab">How</span>Ranking instances by the standardized difficulty shift <em>s(i,l) = d<sub>il</sub>/SE(d<sub>il</sub>)</em> surfaces candidate translation errors for targeted review. An LLM-judge audit (validated by human annotators) confirms the flagged items.</p>
+    <p><span class="lab result">Finding</span>Accuracy baselines concentrate <span class="accent">≥70% of detections in three African languages</span>; Multilingual-IRT spreads detections across all 28 non-English languages, and its negative tail even catches untranslated English left in questions.</p>
+  </div>
+  <figure>
+    <div class="fig-frame"><img src="static/fig2.svg" alt="Jaccard overlap matrix between error-detection methods and stacked bars showing per-language distribution of detected translation errors." loading="lazy"></div>
+    <figcaption><b>Top-1000 critical translation errors by seven scoring methods.</b> (a) Pairwise Jaccard overlap shows Multilingual-IRT's detections are largely complementary to accuracy-based ones. (b) Language distribution: accuracy methods pile onto Wolof, Yoruba, and Zulu, while Multilingual-IRT's detections are spread nearly uniformly, with no language above 11%.</figcaption>
+  </figure>
+</section>
+
+<section class="wrap-wide" id="culture">
+  <div class="wrap" style="padding:0">
+    <div class="sec-head">
+      <div class="kicker"><span class="sym">a<sup>lang</sup><sub>i</sub> / a<sup>base</sup><sub>i</sub></span> split discriminability ratio</div>
+      <h2>Surface culture-specific items</h2>
+    </div>
+    <p><span class="lab">How</span>Ranking items by the ratio a<sup>lang</sup><sub>i</sub>/a<sup>base</sup><sub>i</sub> surfaces those whose separation between LLMs is driven by language rather than content.</p>
+    <p><span class="lab result">Finding</span>The top-ranked items probe culture-specific knowledge (U.S. federal subpoenas, Sikh Ragas, Yiddish vocabulary), barely overlap with what accuracy-based rankers find (Jaccard ≤ 0.11), and are systematically harder than universal ones.</p>
+  </div>
+  <div class="wrap" style="padding:0">
+    <figure>
+      <div class="fig-frame"><img src="static/fig3.svg" alt="Density plot of item difficulty for cultural versus non-cultural items, with cultural items shifted toward higher difficulty." loading="lazy" style="max-width:360px"></div>
+      <figcaption><b>Cultural items are harder.</b> Distribution of item difficulty b<sub>i</sub> split by the judge's cultural-specificity label: mean difficulty +1.32 for cultural vs. +0.51 for non-cultural items (p &lt; 10⁻⁴), with a small native-language advantage on top.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="wrap" id="analysis">
+  <div class="sec-head">
+    <div class="kicker"><span class="sym">R<sup>lng</sup></span> learned cross-lingual correlation matrix</div>
+    <h2>Bonus: recover linguistic structure</h2>
+  </div>
+  <p><span class="lab result">Finding</span>The learned correlation matrix recovers Romance, Slavic, South Asian, and African family blocks with no typological supervision, and shows English clustering with high-resource Arabic, Japanese, and Chinese rather than with its Germanic relatives.</p>
+  <figure>
+    <div class="fig-frame"><img src="static/fig4.svg" alt="Learned cross-lingual correlation matrix with visible diagonal blocks corresponding to language families." loading="lazy" style="max-width:430px"></div>
+    <figcaption><b>Fitted language correlation matrix R<sup>lng</sup>.</b> Colored boxes group languages by linguistic family or region; no group labels are supplied at fit time.</figcaption>
+  </figure>
+</section>
+
+<section class="wrap" id="bibtex">
+  <div class="sec-head"><h2>Citation</h2></div>
+  <div class="bibtex-box">
+    <button class="copy-btn" onclick="copyBib(this)">copy</button>
+    <pre id="bib">@article{lior2026multilingualirt,
+  title   = {Extending Item Response Theory for Efficient and
+             Meaningful Multilingual Evaluation},
+  author  = {Lior, Gili and Frostig, Tzviel and Stanovsky, Gabriel
+             and Eyal, Matan},
+  journal = {arXiv preprint},
+  year    = {2026}
+}</pre>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    Code &amp; data release in progress. Check back soon.<br>
+    Contact: <a href="mailto:gililior@google.com">gililior@google.com</a>
+  </div>
+</footer>
+
+<script>
+function copyBib(btn){
+  navigator.clipboard.writeText(document.getElementById('bib').innerText).then(function(){
+    btn.textContent = 'copied ✓';
+    setTimeout(function(){ btn.textContent = 'copy'; }, 1800);
+  });
+}
+</script>
+</body>
+</html>
